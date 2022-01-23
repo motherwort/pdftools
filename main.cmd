@@ -1,6 +1,6 @@
 @echo off
 
-set script=C:/Users/alimb/anaconda3/python.exe c:/Users/alimb/fix2colpdf/main.py %0
+set script=C:/Users/alimb/anaconda3/python.exe c:/Users/alimb/pdftools/pdftools.py %0
 
 :: SYNTAX
 ::
