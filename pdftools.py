@@ -47,7 +47,6 @@ def splitPages(file, output, axis):
         output.addPage(file_l.getPage(i))
         output.addPage(file_r.getPage(i))
     
-    
 
 def extractPages(file, output, args):
     for arg in args:
