@@ -5,6 +5,26 @@ import string
 import random
 
 
+class Action:
+    def __init__(self, title, short_title=None):
+        self.title = title
+        if short_title:
+            self.short_title = short_title
+        else:
+            self.short_title = title.split(' ')[0]
+
+    # def view(self):
+    #     st.session_state['action'] = self
+
+
+actions = [
+    Action('Merge PDFs'),
+    Action('Split two-page PDF'),
+    Action('Crop PDF'),
+    Action('Extract pages from PDF')
+]
+
+
 class UploadedFile:
     def __init__(self, file):
         self.file = file
@@ -31,38 +51,37 @@ class UploadedFile:
 
 
 def merge_view():
-    st.session_state['title'] = 'Merge PDFs'
+    st.session_state['action'] = actions[0]
     pass
 
 
 def split_view():
-    st.session_state['title'] = 'Split two-page PDF'
+    st.session_state['action'] = actions[1]
     pass
 
 
 def crop_view():
-    st.session_state['title'] = 'Crop PDF'
+    st.session_state['action'] = actions[2]
     pass
 
 
 def extract_view():
-    st.session_state['title'] = 'Extract pages from PDF'
+    st.session_state['action'] = actions[3]
     pass
 
 
 st.set_page_config(page_title='PDF Tools')
 
-if 'title' not in st.session_state:
+if 'action' not in st.session_state:
     st.title('PDF Tools')
 else:
-    st.title(st.session_state.title)
+    st.title(st.session_state.action.title)
 
 # st.sidebar.button('Home', on_click=home_view)
-st.sidebar.button('Merge PDFs', on_click=merge_view)
-st.sidebar.button('Split two-page PDF', on_click=split_view)
-st.sidebar.button('Crop PDF', on_click=crop_view)
-st.sidebar.button('Extract pages from PDF', on_click=extract_view)
-
+st.sidebar.button(actions[0].title, on_click=merge_view)
+st.sidebar.button(actions[1].title, on_click=split_view)
+st.sidebar.button(actions[2].title, on_click=crop_view)
+st.sidebar.button(actions[3].title, on_click=extract_view)
 
 
 def delete_view():
@@ -81,7 +100,7 @@ def delete_view():
 
 
 
-if 'title' in st.session_state:
+if 'action' in st.session_state:
     file_container = st.container()
     with file_container:
         if 'files' in st.session_state:
@@ -103,10 +122,11 @@ if 'title' in st.session_state:
         st.experimental_rerun()
 
     if 'files' in st.session_state:
+        
         order = st.text_input("Write down order of uploaded files", 
             value=','.join(list(map(str, range(1, len(st.session_state.files) + 1)))))
 
-        submit_button = st.button(st.session_state.title.split(' ')[0])
+        submit_button = st.button(st.session_state.action.short_title)
 
         if submit_button:
             st.write(list(map(int, order.split(','))))
