@@ -5,6 +5,9 @@ from pathlib import Path
 import re
 
 
+# TODO реализовать все действия, заявленные в UI
+
+
 def splitPages(file, output, axis):
     page = file.getPage(0)
     """
@@ -48,6 +51,7 @@ def splitPages(file, output, axis):
         output.addPage(file_r.getPage(i))
     
 
+# TODO добавить нотацию слайсов с шагом: вместо (или наряду с) 1-10 использовать 1:10:2
 def extractPages(file, output, args):
     for arg in args:
         if re.match(r"^\d+-\d+$", arg):
@@ -61,6 +65,8 @@ def extractPages(file, output, args):
             output.addPage(page)
     
 
+# TODO сделать потом консольный интерфейс, .cmd исправить чтобы прото передавал argv в скрипт,
+# найти библиотеку, в которой уже красивый консольный интерфейс реализован
 if __name__ == '__main__':
     parent = Path(sys.argv[1]).parent.absolute()
 
