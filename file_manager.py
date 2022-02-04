@@ -5,11 +5,10 @@ import string
 import random
 
 
-class UploadedFile:
+class FileItem:
     def __init__(self, file):
         self.file = file
         self.checkbox = None
-        
         self.id = None
     
     def connect_checkbox(self, checkbox):
@@ -51,12 +50,21 @@ class FileManager:
             submitted = st.form_submit_button('Add')
             
         if submitted and files is not None:
-            self.files.update(self.get_file_dict(files))
+            self.add_files(files)
             st.experimental_rerun()
 
-    def get_file_dict(self, files):
-        u_files = [UploadedFile(f) for f in files]
-        return {file.get_random_key(): file for file in u_files}
+    # def get_file_dict(self, files):
+    #     fitems = [FileItem(f) for f in files]
+    #     return {file.get_random_key(): file for file in fitems}
+
+    # def add_file(self, file):
+    #     fitem = FileItem(file)
+    #     self.files[fitem.get_random_key()] = fitem
+
+    def add_files(self, files):
+        fitems = [FileItem(f) for f in files]
+        new_files = {fitem.get_random_key(): fitem for fitem in fitems}
+        self.files.update(new_files)
 
     def delete_selected(self):
         to_save = []
@@ -83,5 +91,8 @@ class FileManager:
         raise NotImplementedError
 
     def get_selected(self, selection):
+        file_list = [f.file for f in self.files.values()]
+        selected = [file_list[s - 1] for s in selection]
+        return selected
         # TODO декодировать из номера в списке
         raise NotImplementedError
