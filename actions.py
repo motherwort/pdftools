@@ -43,9 +43,10 @@ class Action(metaclass=ABCMeta):
         if submit_button:
             # TODO сохранить результат в state, а выводить в другом месте (в result_manager???)
             result = self.process(options)
-            st.download_button("Save", result.getvalue(), 
-                file_name=result.name)
-            st.button("Further process", on_click=self.send_result, args=(result,))
+            if result:
+                st.download_button("Save", result.getvalue(), 
+                    file_name=result.name)
+                st.button("Further process", on_click=self.send_result, args=(result,))
 
     def send_result(self, file):
         fmanager = FileManager.manager()
@@ -70,7 +71,7 @@ class Merge(Action):
     def process(self, options):
         fmanager = FileManager.manager()
         files = fmanager.get_selected(list(map(int, options['order'].split(','))))
-        result = pt.mergePages(files)
+        result = pt.mergeFiles(files)
         return result
 
 
@@ -88,7 +89,10 @@ class Split(Action):
         return options
 
     def process(self, options):
-        st.write(options['filenum'])
+        fmanager = FileManager.manager()
+        file = fmanager.get_selected([options['filenum']])[0]
+        result = pt.splitPages(file, 1) #TODO сделать выбор axis
+        return result
 
 
 class Crop(Action):
@@ -97,6 +101,7 @@ class Crop(Action):
     def options(self):
         #TODO выбор страницы и её рендер
         #боксы для выбора границ
+        st.write("Not implemented yet")
         pass
 
     def process(self, options):

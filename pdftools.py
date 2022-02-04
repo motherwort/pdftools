@@ -1,3 +1,4 @@
+import os
 from PyPDF2 import PdfFileWriter, PdfFileReader, PdfFileMerger
 from copy import copy, deepcopy
 import sys
@@ -11,25 +12,28 @@ class File(io.BytesIO):
         self.name = filename
         super().__init__()
 
+    @property
+    def pages(self):
+        reader = PdfFileReader(self)
+        return reader.getNumPages()
+
 
 # TODO реализовать все действия, заявленные в UI
 
 
-def mergePages(files):
+def mergeFiles(files):
     merged = PdfFileWriter()
     for file in files:
-        f = PdfFileReader(file)
-        merged.appendPagesFromReader(f)
-        # f = PdfFileReader(file)
-        # for p in range(f.getNumPages()):
-        #     output.addPage(f.getPage(p))
+        reader = PdfFileReader(file)
+        merged.appendPagesFromReader(reader)
     output = File('merge.pdf')
     merged.write(output)
     return output
 
 
-def splitPages(file, output, axis):
-    page = file.getPage(0)
+def splitPages(file, axis):
+    reader = PdfFileReader(file)
+    page = reader.getPage(0)
     """
     (x1,y2) (x2,y2)
     (x1,y1) (x2,y1)
@@ -44,10 +48,10 @@ def splitPages(file, output, axis):
         x01, x02 = x2, x1
         y01 = y02 = y1 + (y2 - y1)/2
     
-    def crop(file, output_fname, x1, y1, x2, y2):
+    def crop(reader, output_fname, x1, y1, x2, y2):
         temp_file = PdfFileWriter()
-        for i in range(file.getNumPages()):
-            page = file.getPage(i)
+        for i in range(reader.getNumPages()):
+            page = reader.getPage(i)
 
             page.mediaBox.lowerRight = (x2, y1)
             page.mediaBox.lowerLeft = (x1, y1)
@@ -59,16 +63,27 @@ def splitPages(file, output, axis):
         with open(output_fname, 'wb') as file:
             temp_file.write(file)
     
-    crop(file, '__temp_l__.pdf', x1, y1, x01, y01)
-    crop(file, '__temp_r__.pdf', x02, y02, x2, y2)
+    crop(reader, '__temp_l__.pdf', x1, y1, x01, y01)
+    crop(reader, '__temp_r__.pdf', x02, y02, x2, y2)
     
     f_l = open('__temp_l__.pdf', 'rb')
     f_r = open('__temp_r__.pdf', 'rb')
     file_l = PdfFileReader(f_l)
     file_r = PdfFileReader(f_r)
+
+    splitted = PdfFileWriter()
     for i in range(file_l.getNumPages()):
-        output.addPage(file_l.getPage(i))
-        output.addPage(file_r.getPage(i))
+        splitted.addPage(file_l.getPage(i))
+        splitted.addPage(file_r.getPage(i))
+
+    output = File('merge.pdf')
+    splitted.write(output)
+    
+    f_l.close()
+    f_r.close()
+    os.remove('__temp_l__.pdf')
+    os.remove('__temp_r__.pdf')
+    return output
     
 
 # TODO добавить нотацию слайсов с шагом: вместо (или наряду с) 1-10 использовать 1:10:2
