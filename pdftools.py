@@ -3,9 +3,29 @@ from copy import copy, deepcopy
 import sys
 from pathlib import Path
 import re
+import io
+
+
+class File(io.BytesIO):
+    def __init__(self, filename) -> None:
+        self.name = filename
+        super().__init__()
 
 
 # TODO реализовать все действия, заявленные в UI
+
+
+def mergePages(files):
+    merged = PdfFileWriter()
+    for file in files:
+        f = PdfFileReader(file)
+        merged.appendPagesFromReader(f)
+        # f = PdfFileReader(file)
+        # for p in range(f.getNumPages()):
+        #     output.addPage(f.getPage(p))
+    output = File('merge.pdf')
+    merged.write(output)
+    return output
 
 
 def splitPages(file, output, axis):
@@ -68,28 +88,29 @@ def extractPages(file, output, args):
 # TODO сделать потом консольный интерфейс, .cmd исправить чтобы прото передавал argv в скрипт,
 # найти библиотеку, в которой уже красивый консольный интерфейс реализован
 if __name__ == '__main__':
-    parent = Path(sys.argv[1]).parent.absolute()
+    raise NotImplementedError
+    # parent = Path(sys.argv[1]).parent.absolute()
 
-    input_fpath = parent.joinpath(sys.argv[2])
-    output_fpath = parent.joinpath(sys.argv[3])
+    # input_fpath = parent.joinpath(sys.argv[2])
+    # output_fpath = parent.joinpath(sys.argv[3])
 
-    f = open(input_fpath, "rb")
+    # f = open(input_fpath, "rb")
 
-    input_file = PdfFileReader(f)
+    # input_file = PdfFileReader(f)
 
-    output_file = PdfFileWriter()
+    # output_file = PdfFileWriter()
 
-    if len(sys.argv) > 5 and sys.argv[4] == 'extract':
-        extractPages(input_file, output_file, sys.argv[5:])
+    # if len(sys.argv) > 5 and sys.argv[4] == 'extract':
+    #     extractPages(input_file, output_file, sys.argv[5:])
 
-    if sys.argv[4] == 'split':
-        if len(sys.argv) > 5:
-            axis = int(sys.argv[5])
-        else:
-            axis = 0
-        splitPages(input_file, output_file, axis)
+    # if sys.argv[4] == 'split':
+    #     if len(sys.argv) > 5:
+    #         axis = int(sys.argv[5])
+    #     else:
+    #         axis = 0
+    #     splitPages(input_file, output_file, axis)
 
-    with open(output_fpath, 'wb') as file:
-        output_file.write(file)
+    # with open(output_fpath, 'wb') as file:
+    #     output_file.write(file)
 
-    f.close()
+    # f.close()

@@ -33,6 +33,7 @@ class Action(metaclass=ABCMeta):
 
     @abstractmethod
     def process(self, options):
+        #Have to return result of streamlit.UploadedFile or pdftools.File type
         pass
 
     def routine(self):
@@ -41,8 +42,13 @@ class Action(metaclass=ABCMeta):
         if submit_button:
             # TODO сохранить результат в state, а выводить в другом месте (в result_manager???)
             result = self.process(options)
-            st.button("Save")
-            st.button("Further process")
+            st.download_button("Save", result.getvalue(), 
+                file_name=result.name)
+            st.button("Further process", on_click=self.send_result, args=(result,))
+
+    def send_result(self, file):
+        fmanager = FileManager.manager()
+        fmanager.add_files([file])
 
 
 # TODO добавить реальный функционал, доделать управление
@@ -61,7 +67,10 @@ class Merge(Action):
         return options
 
     def process(self, options):
-        st.write(list(map(int, options['order'].split(','))))
+        fmanager = FileManager.manager()
+        files = fmanager.get_selected(list(map(int, options['order'].split(','))))
+        result = pt.mergePages(files)
+        return result
 
 
 class Split(Action):
