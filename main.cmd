@@ -1,5 +1,9 @@
 @echo off
 
+:: NOT IMPLEMENTED YET
+echo NOT IMPLEMENTED YET
+exit
+
 set script=C:/Users/alimb/anaconda3/python.exe c:/Users/alimb/pdftools/pdftools.py %0
 
 :: SYNTAX
