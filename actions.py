@@ -8,6 +8,7 @@ MERGE = 'Merge PDFs'
 SPLIT = 'Split two-page PDF'
 CROP = 'Crop PDF'
 EXTRACT = 'Extract pages from PDF'
+SAVE = 'Save file from file manager'
 
 
 class Action(metaclass=ABCMeta):
@@ -121,9 +122,35 @@ class Extract(Action):
         st.write(options['order'].split(','))
 
 
+class Save(Action):
+    title = SAVE
+
+    def routine(self):
+        options = self.options()
+        submit_button = st.button('Get')
+        if submit_button:
+            result = self.process(options)
+            st.download_button(f"Save {result.name}", result.getvalue(), 
+                file_name=result.name)
+
+    def options(self):
+        fmanager = FileManager.manager()
+        filenum = fmanager.file_selector()
+        options = {
+            'filenum': filenum,
+        }
+        return options
+    
+    def process(self, options):
+        fmanager = FileManager.manager()
+        file = fmanager.get_selected([options['filenum']])[0]
+        return file
+
+
 actions = [
     Merge(),
     Split(),
     Crop(),
-    Extract()
+    Extract(),
+    Save()
 ]
