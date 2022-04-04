@@ -87,17 +87,22 @@ def splitPages(file, axis):
     
 
 # TODO добавить нотацию слайсов с шагом: вместо (или наряду с) 1-10 использовать 1:10:2
-def extractPages(file, output, args):
+def extractPages(file, args):
+    reader = PdfFileReader(file)
+    output = File('extract.pdf')
+    extracted = PdfFileWriter()
     for arg in args:
         if re.match(r"^\d+-\d+$", arg):
             r = list(map(lambda x: int(x) - 1, arg.split('-')))
             for p in range(r[0], r[1] + (-1)**(r[1] < r[0]), (-1)**(r[1] < r[0])):
-                page = file.getPage(p)
-                output.addPage(page)
+                page = reader.getPage(p)
+                extracted.addPage(page)
         if re.match(r"^\d+$", arg):
             p = int(arg) - 1
-            page = file.getPage(p)
-            output.addPage(page)
+            page = reader.getPage(p)
+            extracted.addPage(page)
+    extracted.write(output)
+    return output
     
 
 # TODO сделать потом консольный интерфейс, .cmd исправить чтобы прото передавал argv в скрипт,

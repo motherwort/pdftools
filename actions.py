@@ -123,8 +123,12 @@ class Extract(Action):
         return options
 
     def process(self, options):
-        st.write(options['filenum'])
-        st.write(options['order'].split(','))
+        fmanager = FileManager.manager()
+        file = fmanager.get_selected([options['filenum']])[0]
+        result = pt.extractPages(file, options['order'].split(','))
+        return result
+        # st.write(options['filenum'])
+        # st.write(options['order'].split(','))
 
 
 class Save(Action):
